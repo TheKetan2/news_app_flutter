@@ -23,7 +23,7 @@ class NewsModal {
       json['title'],
       json['description'],
       json['urlToImage'],
-      json['publishAt'],
+      json['publishedAt'],
       json['url'],
     );
   }

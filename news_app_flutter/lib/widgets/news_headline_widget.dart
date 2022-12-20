@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:news_app_flutter/utils.dart';
 
 class NewsHeadlineWidget extends StatelessWidget {
-  const NewsHeadlineWidget({Key? key}) : super(key: key);
+  final String author;
+  final String title;
+  final String desc;
+  final String img;
+  final String date;
+  final String url;
+
+  const NewsHeadlineWidget(
+      {super.key,
+      required this.author,
+      required this.title,
+      required this.desc,
+      required this.img,
+      required this.date,
+      required this.url});
 
   @override
   Widget build(BuildContext context) {
@@ -14,14 +29,19 @@ class NewsHeadlineWidget extends StatelessWidget {
         elevation: 5,
         child: Row(
           children: [
-            Image(
-              image: NetworkImage(
-                "https://pbs.twimg.com/profile_images/1590968738358079488/IY9Gx6Ok_400x400.jpg",
-              ),
-              width: MediaQuery.of(context).size.width * 0.33,
-              height: 150,
-              fit: BoxFit.fill,
-            ),
+            img == ""
+                ? Container(
+                    width: MediaQuery.of(context).size.width * 0.33,
+                    height: 150,
+                  )
+                : Image(
+                    image: NetworkImage(
+                      img,
+                    ),
+                    width: MediaQuery.of(context).size.width * 0.33,
+                    height: 150,
+                    fit: BoxFit.fill,
+                  ),
             SizedBox(
               width: 10,
             ),
@@ -32,42 +52,49 @@ class NewsHeadlineWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "kajbdsbasjkavsckja",
+                      title,
                       style: textStyle(
                         16,
                         Colors.black,
                         FontWeight.w600,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(
                       height: 3,
                     ),
                     Row(
                       children: [
-                        Text(
-                          "Jonh Doe",
-                          style: textStyle(
-                            14,
-                            Colors.grey,
-                            FontWeight.bold,
+                        Expanded(
+                          child: Text(
+                            author.length == 0
+                                ? "Author not mentioned..."
+                                : author.split(",")[0],
+                            style: textStyle(
+                              14,
+                              Colors.grey,
+                              FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         SizedBox(
                           width: 10,
                         ),
                         Text(
-                          "12-12-2022",
+                          DateFormat("yMd").format(DateTime.parse(date)),
                           style: textStyle(
                             14,
                             Colors.grey,
                             FontWeight.bold,
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                     Expanded(
                       child: Text(
-                        "Learning a little each day adds up. Research shows that students who make learning a habit are more likely to reach their goals. Set time aside to learn and get reminders using your learning scheduler.",
+                        desc,
                         style: textStyle(
                           14,
                           Colors.black,

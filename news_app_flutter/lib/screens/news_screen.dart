@@ -1,10 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:news_app_flutter/block/get_news_block.dart';
+import 'package:news_app_flutter/modals/news_modals.dart';
 import 'package:news_app_flutter/utils.dart';
 
 import '../widgets/news_headline_widget.dart';
 
-class NewsScreen extends StatelessWidget {
+class NewsScreen extends StatefulWidget {
   const NewsScreen({Key? key}) : super(key: key);
+
+  @override
+  State<NewsScreen> createState() => _NewsScreenState();
+}
+
+class _NewsScreenState extends State<NewsScreen> {
+  late GetNewsBloc getNewsBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    getNewsBloc = GetNewsBloc();
+    getNewsBloc.getNews("general", "us");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,14 +66,32 @@ class NewsScreen extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            ListView.builder(
-              itemCount: 5,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return NewsHeadlineWidget();
-              },
-            )
+            StreamBuilder<NewsResponse>(
+                stream: getNewsBloc.subject.stream,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  List<NewsModal>? newsList = snapshot.data?.news;
+                  return ListView.builder(
+                    itemCount: newsList?.length,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      NewsModal news = newsList![index];
+                      return NewsHeadlineWidget(
+                        author: news.author == null ? "" : news.author,
+                        date: news.date == null ? "" : news.date,
+                        desc: news.desc == null ? "" : news.desc,
+                        img: news.img == null ? "" : news.img,
+                        title: news.title == null ? "" : news.title,
+                        url: news.url == null ? "" : news.url,
+                      );
+                    },
+                  );
+                })
           ],
         ),
       ),
