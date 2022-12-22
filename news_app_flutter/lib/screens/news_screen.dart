@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_app_flutter/block/get_news_block.dart';
+import 'package:news_app_flutter/block/select_category_bloc.dart';
 import 'package:news_app_flutter/modals/news_modals.dart';
 import 'package:news_app_flutter/utils.dart';
 
@@ -14,12 +15,13 @@ class NewsScreen extends StatefulWidget {
 
 class _NewsScreenState extends State<NewsScreen> {
   late GetNewsBloc getNewsBloc;
-
+  late SelectCategoryBloc selectCategoryBloc;
   @override
   void initState() {
     super.initState();
     getNewsBloc = GetNewsBloc();
     getNewsBloc.getNews("general", "us");
+    selectCategoryBloc = SelectCategoryBloc();
   }
 
   @override
@@ -35,6 +37,7 @@ class _NewsScreenState extends State<NewsScreen> {
             FontWeight.w500,
           ),
         ),
+        actions: [],
       ),
       body: SingleChildScrollView(
         physics: ScrollPhysics(),
@@ -43,26 +46,39 @@ class _NewsScreenState extends State<NewsScreen> {
             const SizedBox(
               height: 10,
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: categories
-                    .map(
-                      (category) => Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          category,
-                          style: textStyle(
-                            25,
-                            Colors.grey,
-                            FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
+            StreamBuilder(
+                stream: selectCategoryBloc.categoryStream,
+                initialData: selectCategoryBloc.defaultCategory,
+                builder: (context, snapshot) {
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: categories
+                          .map(
+                            (category) => Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                onTap: () {
+                                  selectCategoryBloc.selectCategory(category);
+                                  getNewsBloc.getNews(category, "us");
+                                },
+                                child: Text(
+                                  category,
+                                  style: textStyle(
+                                    25,
+                                    snapshot.data == category
+                                        ? Colors.black
+                                        : Colors.grey,
+                                    FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  );
+                }),
             const SizedBox(
               height: 10,
             ),
