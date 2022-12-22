@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app_flutter/block/country_code_bloc.dart';
 import 'package:news_app_flutter/block/get_news_block.dart';
 import 'package:news_app_flutter/block/select_category_bloc.dart';
 import 'package:news_app_flutter/modals/news_modals.dart';
@@ -16,12 +17,14 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   late GetNewsBloc getNewsBloc;
   late SelectCategoryBloc selectCategoryBloc;
+  late SelectCountryBloc selectCountryBlock;
   @override
   void initState() {
     super.initState();
     getNewsBloc = GetNewsBloc();
     getNewsBloc.getNews("general", "us");
     selectCategoryBloc = SelectCategoryBloc();
+    selectCountryBlock = SelectCountryBloc();
   }
 
   @override
@@ -37,7 +40,34 @@ class _NewsScreenState extends State<NewsScreen> {
             FontWeight.w500,
           ),
         ),
-        actions: [],
+        actions: [
+          StreamBuilder(
+              stream: selectCountryBlock.countryStream,
+              initialData: selectCountryBlock.defaultCountry,
+              builder: (context, snapshot) {
+                return DropdownButton(
+                  style: textStyle(20, Colors.black, FontWeight.w500),
+                  dropdownColor: Colors.white,
+                  value: snapshot.data,
+                  items: countries
+                      .map(
+                        (country) => DropdownMenuItem(
+                          value: country,
+                          child: Text(country.toUpperCase()),
+                        ),
+                      )
+                      .toList(),
+                  iconSize: 22,
+                  onChanged: (value) {
+                    selectCountryBlock.selectCountry(value.toString());
+
+                    Future.delayed(Duration(seconds: 5), () {
+                      print(snapshot.data);
+                    });
+                  },
+                );
+              })
+        ],
       ),
       body: SingleChildScrollView(
         physics: ScrollPhysics(),
