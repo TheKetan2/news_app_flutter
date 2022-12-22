@@ -44,28 +44,36 @@ class _NewsScreenState extends State<NewsScreen> {
           StreamBuilder(
               stream: selectCountryBlock.countryStream,
               initialData: selectCountryBlock.defaultCountry,
-              builder: (context, snapshot) {
-                return DropdownButton(
-                  style: textStyle(20, Colors.black, FontWeight.w500),
-                  dropdownColor: Colors.white,
-                  value: snapshot.data,
-                  items: countries
-                      .map(
-                        (country) => DropdownMenuItem(
-                          value: country,
-                          child: Text(country.toUpperCase()),
-                        ),
-                      )
-                      .toList(),
-                  iconSize: 22,
-                  onChanged: (value) {
-                    selectCountryBlock.selectCountry(value.toString());
-
-                    Future.delayed(Duration(seconds: 5), () {
-                      print(snapshot.data);
+              builder: (context, countrySnapshot) {
+                return StreamBuilder(
+                    stream: selectCategoryBloc.categoryStream,
+                    initialData: selectCategoryBloc.defaultCategory,
+                    builder: (context, categorySnapshot) {
+                      return DropdownButton(
+                        style: textStyle(20, Colors.black, FontWeight.w500),
+                        dropdownColor: Colors.white,
+                        value: countrySnapshot.data,
+                        items: countries
+                            .map(
+                              (country) => DropdownMenuItem(
+                                value: country,
+                                child: Text(country.toUpperCase()),
+                              ),
+                            )
+                            .toList(),
+                        iconSize: 22,
+                        onChanged: (value) {
+                          selectCountryBlock.selectCountry(value.toString());
+                          getNewsBloc.getNews(
+                            categorySnapshot.data.toString(),
+                            value.toString(),
+                          );
+                          Future.delayed(Duration(seconds: 5), () {
+                            print(countrySnapshot.data);
+                          });
+                        },
+                      );
                     });
-                  },
-                );
               })
         ],
       ),
@@ -79,35 +87,42 @@ class _NewsScreenState extends State<NewsScreen> {
             StreamBuilder(
                 stream: selectCategoryBloc.categoryStream,
                 initialData: selectCategoryBloc.defaultCategory,
-                builder: (context, snapshot) {
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: categories
-                          .map(
-                            (category) => Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: InkWell(
-                                onTap: () {
-                                  selectCategoryBloc.selectCategory(category);
-                                  getNewsBloc.getNews(category, "us");
-                                },
-                                child: Text(
-                                  category,
-                                  style: textStyle(
-                                    25,
-                                    snapshot.data == category
-                                        ? Colors.black
-                                        : Colors.grey,
-                                    FontWeight.w600,
+                builder: (context, categorySnapshot) {
+                  return StreamBuilder(
+                      stream: selectCountryBlock.countryStream,
+                      initialData: selectCountryBlock.defaultCountry,
+                      builder: (context, countrySnapshot) {
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: categories
+                                .map(
+                                  (category) => Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: InkWell(
+                                      onTap: () {
+                                        selectCategoryBloc
+                                            .selectCategory(category);
+                                        getNewsBloc.getNews(category,
+                                            countrySnapshot.data.toString());
+                                      },
+                                      child: Text(
+                                        category,
+                                        style: textStyle(
+                                          25,
+                                          categorySnapshot.data == category
+                                              ? Colors.black
+                                              : Colors.grey,
+                                          FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  );
+                                )
+                                .toList(),
+                          ),
+                        );
+                      });
                 }),
             const SizedBox(
               height: 10,
