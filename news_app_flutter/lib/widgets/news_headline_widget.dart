@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
+import 'package:news_app_flutter/screens/webview_screen.dart';
 import 'package:news_app_flutter/utils.dart';
 
 class NewsHeadlineWidget extends StatelessWidget {
@@ -139,7 +140,17 @@ class NewsHeadlineWidget extends StatelessWidget {
                           ),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => WebpageScreen(
+                                  title: title,
+                                  uri: url,
+                                ),
+                              ),
+                            );
+                          },
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.yellow,
                           ),

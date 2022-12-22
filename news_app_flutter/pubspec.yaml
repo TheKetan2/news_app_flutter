@@ -18,7 +18,7 @@ dependencies:
   http:
   google_fonts:
   flutter_tts:
-  webview_flutter:
+  webview_flutter: 2.6.0
   intl:
 
 dev_dependencies:
