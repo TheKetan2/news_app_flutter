@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:news_app_flutter/utils.dart';
 
@@ -10,7 +11,7 @@ class NewsHeadlineWidget extends StatelessWidget {
   final String date;
   final String url;
 
-  const NewsHeadlineWidget(
+  NewsHeadlineWidget(
       {super.key,
       required this.author,
       required this.title,
@@ -18,6 +19,15 @@ class NewsHeadlineWidget extends StatelessWidget {
       required this.img,
       required this.date,
       required this.url});
+
+  FlutterTts flutterTts = FlutterTts();
+
+  speak(String text) async {
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setPitch(1);
+    await flutterTts.setVolume(1);
+    await flutterTts.speak(text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,18 +117,22 @@ class NewsHeadlineWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            speak(desc);
+                          },
                           padding: EdgeInsets.zero,
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.play_arrow,
                             size: 43,
                             color: Colors.yellow,
                           ),
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            flutterTts.stop();
+                          },
                           padding: EdgeInsets.zero,
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.stop,
                             size: 43,
                             color: Colors.black,
